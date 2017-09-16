@@ -35,13 +35,13 @@ menu :index do
   big_header "Sakaki"
   br
   config["boards"].each do |board, array|
-    link "/#{board}/ - #{config["boards"][board]["description"]}", "/#{board}"
+    menu "/#{board}/ - #{config["boards"][board]["description"]}", "/#{board}"
   end
   br
 end
 
 menu :board do |con, board|
-  query(con, "SELECT * WHERE board='#{board}' AND is_op=1 ORDER BY bump_date DESC") do |res|
-    link "=#{res["title"]}= [Created on: #{res["date_posted"]}, Latest bump on: #{res["bump_date"]}]"
+  query(con, "SELECT * FROM posts WHERE board='#{board}' AND is_op=1 ORDER BY bump_date DESC") do |res|
+    menu "=#{res["title"]}= [Created on: #{res["date_posted"]}, Latest bump on: #{res["bump_date"]}]"
   end
 end
