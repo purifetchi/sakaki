@@ -41,7 +41,7 @@ menu :index do
 end
 
 menu :board do |con, board|
-  query(con, "SELECT * WHERE board=#{board} AND is_op = 1 ORDER BY bump_date DESC") do |res|
+  query(con, "SELECT * WHERE board='#{board}' AND is_op=1 ORDER BY bump_date DESC") do |res|
     link "=#{res["title"]}= [Created on: #{res["date_posted"]}, Latest bump on: #{res["bump_date"]}]"
   end
 end
