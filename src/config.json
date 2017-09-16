@@ -1,0 +1,9 @@
+{
+  "host_ip": "0.0.0.0",
+  "port": 70,
+  "boards": {
+    "test": {
+      "description": "Sakaki Love"
+    }
+  }
+}
