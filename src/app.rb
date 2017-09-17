@@ -43,7 +43,7 @@ end
 menu :board do |con, board|
   big_header "/#{board}/"
   br
-  query(con, "SELECT * FROM posts WHERE board='#{board}' AND is_op=1 ORDER BY bump_date DESC") do |res|
+  query(con, "SELECT * FROM posts WHERE board='#{board}' AND is_op=1 ORDER BY bump_date DESC").each do |res|
     menu "=#{res["title"]}= [Created on: #{res["date_posted"]}, Latest bump on: #{res["bump_date"]}]", "/#{board}/thread/#{res["post_id"].to_s}"
   end
   br
