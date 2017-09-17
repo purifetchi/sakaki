@@ -30,32 +30,6 @@ route '/about' do
   render :about
 end
 
-route API + '/boards' do
-  "#{JSON.dump(config["boards"])}"
-end
-
-route API + '/board/:board' do
-  payload = []
-  query(make_con(), "SELECT * FROM posts WHERE board=? AND is_op=1 ORDER BY bump_date DESC", params[:board]).each do |res|
-    output = {:post_id => res["post_id"].to_s, :title => res["title"], :comment => res["content"], :date_posted => res["date_posted"], :date_bumped => res["bump_date"]}
-    payload.push(output)
-  end
-  "#{JSON.dump(payload)}"
-end
-
-route API + '/thread/:id' do
-  payload = []
-  query(make_con(), "SELECT * FROM posts WHERE parent=? OR post_id=?", params[:id].to_i, params[:id].to_i).each do |res|
-    output = {:post_id => res["post_id"].to_s, :comment => res["content"], :date_posted => res["date_posted"], :is_op => res["is_op"]}
-    if res["is_op"] == 1 then
-      output[:title] = res["title"]
-      output[:date_bumped] = res["bump_date"]
-    end
-    payload.push(output)
-  end
-  "#{JSON.dump(payload)}"
-end
-
 config["boards"].each do |board, array|
   route '/' + board do
     render :board, make_con(), board
@@ -147,6 +121,34 @@ end
 
 menu :about do
   "Sakaki is a textboard script for Gopher made in Ruby w/ the Gopher2000 gem.\nSakaki is (c) 2017 prefetcher"
+end
+
+# API begins here
+
+route API + '/boards' do
+  "#{JSON.dump(config["boards"])}"
+end
+
+route API + '/board/:board' do
+  payload = []
+  query(make_con(), "SELECT * FROM posts WHERE board=? AND is_op=1 ORDER BY bump_date DESC", params[:board]).each do |res|
+    output = {:post_id => res["post_id"].to_s, :title => res["title"], :comment => res["content"], :date_posted => res["date_posted"], :date_bumped => res["bump_date"]}
+    payload.push(output)
+  end
+  "#{JSON.dump(payload)}"
+end
+
+route API + '/thread/:id' do
+  payload = []
+  query(make_con(), "SELECT * FROM posts WHERE parent=? OR post_id=?", params[:id].to_i, params[:id].to_i).each do |res|
+    output = {:post_id => res["post_id"].to_s, :comment => res["content"], :date_posted => res["date_posted"], :is_op => res["is_op"]}
+    if res["is_op"] == 1 then
+      output[:title] = res["title"]
+      output[:date_bumped] = res["bump_date"]
+    end
+    payload.push(output)
+  end
+  "#{JSON.dump(payload)}"
 end
 
 # bitch lasagna
