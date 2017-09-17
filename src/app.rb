@@ -55,7 +55,7 @@ end
 
 # All the renderable menus
 menu :index do
-  figlet "Sakaki"
+  figlet "#{config["name"]}"
   br
   config["boards"].each do |board, array|
     menu "/#{board}/ - #{config["boards"][board]["description"]}", "/#{board}"
@@ -69,7 +69,9 @@ menu :board do |con, board|
   input 'Make a new thread', "/#{board}/half"
   br
   query(con, "SELECT * FROM posts WHERE board=? AND is_op=1 ORDER BY bump_date DESC", board).each do |res|
-    menu "=#{res["title"]}= [Created on: #{res["date_posted"]}, Latest bump on: #{res["bump_date"]}]", "/#{board}/thread/#{res["post_id"].to_s}"
+    text "Created on: #{res["date_posted"]}, Latest bump on: #{res["bump_date"]}"
+    menu "#{res["title"]}", "/#{board}/thread/#{res["post_id"].to_s}"
+    br
   end
   br
 end
