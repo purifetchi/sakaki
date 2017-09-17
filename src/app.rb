@@ -49,7 +49,7 @@ config["boards"].each do |board, array|
     con = make_con()
     title = Base64.urlsafe_decode64(params[:title])
     query(con, "INSERT INTO posts (title, content, is_op, board) VALUES (?, ?, ?, ?)", title, request.input, 1, board);
-    render :post, board, newest_id
+    render :post, board
   end
 end
 
