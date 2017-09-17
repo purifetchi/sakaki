@@ -45,7 +45,7 @@ config["boards"].each do |board, array|
     render :half, board, request.input
   end
 
-  route '/' + board + '/post/:title' do
+  route '/' + board + '/post/:title/' do
     con = make_con()
     title = Base64.urlsafe_decode64(params[:title])
     query(con, "INSERT INTO posts (title, content, is_op, board) VALUES (?, ?, ?, ?)", title, request.input, 1, board);
