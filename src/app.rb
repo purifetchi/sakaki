@@ -119,8 +119,7 @@ menu :post do |board|
 end
 
 menu :about do
-  "Sakaki is a textboard script for Gopher made in Ruby w/ the Gopher2000 gem."
-  "Sakaki is (c) 2017 prefetcher"
+  "Sakaki is a textboard script for Gopher made in Ruby w/ the Gopher2000 gem.\nSakaki is (c) 2017 prefetcher"
 end
 
 # bitch lasagna
