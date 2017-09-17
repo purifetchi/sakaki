@@ -31,7 +31,7 @@ route '/about' do
 end
 
 route API + '/boards' do
-  "#{JSON.Stringify(config["boards"])}"
+  "#{JSON.dump(config["boards"])}"
 end
 
 config["boards"].each do |board, array|
