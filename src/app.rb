@@ -28,6 +28,15 @@ config["boards"].each do |board, array|
   route '/' + board do
     render :board, make_con(), board
   end
+
+  route '/' + board + '/:id' do
+    render :thread, make_con(), board, params[:id]
+  end
+
+  route '/' + board + '/reply/:id' do
+    query(make_con(), "INSERT INTO posts (content, parent, is_op, board) VALUES (?, ?, ?, ?)", request.input, params[:id].to_i, 0, board);
+    render :reply, board, params[:id]
+  end
 end
 
 # All the renderable menus
@@ -47,4 +56,27 @@ menu :board do |con, board|
     menu "=#{res["title"]}= [Created on: #{res["date_posted"]}, Latest bump on: #{res["bump_date"]}]", "/#{board}/thread/#{res["post_id"].to_s}"
   end
   br
+end
+
+menu :thread do |con, board, id|
+  big_header "thread"
+  br
+  query(con, "SELECT * FROM posts WHERE board='#{board}' AND parent=#{id.to_i}").each do |res|
+    if res["title"] then
+      text "#{res["title"]}"
+      br
+    end
+
+    text "Post number: ##{res["post_id"].to_s}, Posted on: #{res["date_posted"]}"
+    text "| #{res["content"]}"
+    br
+  end
+  br
+  input 'Reply', "/#{board}/reply/#{id}"
+end
+
+menu :reply do |board, id|
+  text "Replied to thread #{id}"
+  br
+  menu 'Go back', "/#{board}/thread/#{id}"
 end
