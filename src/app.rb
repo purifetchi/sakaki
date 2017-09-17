@@ -25,6 +25,10 @@ route '/' do
   render :index
 end
 
+route '/about' do
+  render :about
+end
+
 config["boards"].each do |board, array|
   route '/' + board do
     render :board, make_con(), board
@@ -56,7 +60,9 @@ end
 # All the renderable menus
 menu :index do
   figlet "#{config["name"]}"
+  link "About Sakaki", '/about'
   br
+  header "Boards"
   config["boards"].each do |board, array|
     menu "/#{board}/ - #{config["boards"][board]["description"]}", "/#{board}"
   end
@@ -64,7 +70,7 @@ menu :index do
 end
 
 menu :board do |con, board|
-  big_header "/#{board}/"
+  header "/#{board}/"
   br
   input 'Make a new thread', "/#{board}/half"
   br
@@ -111,3 +117,10 @@ menu :post do |board|
   br
   menu 'Go back to board', "/#{board}"
 end
+
+menu :about do
+  "Sakaki is a textboard script for Gopher made in Ruby w/ the Gopher2000 gem."
+  "Sakaki is (c) 2017 prefetcher"
+end
+
+# bitch lasagna
