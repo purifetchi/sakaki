@@ -47,9 +47,10 @@ config["boards"].each do |board, array|
 
   route '/' + board + '/post/:title' do
     con = make_con()
-    newest_id = con.last_id + 1
     title = Base64.urlsafe_decode64(params[:title])
-    query(con, "INSERT INTO posts (title, content, parent, is_op, board) VALUES (?, ?, ?, ?, ?)", title, request.input, newest_id, 1, board);
+    query(con, "INSERT INTO posts (title, content, is_op, board) VALUES (?, ?, ?, ?)", title, request.input, 1, board);
+    newest_id = con.last_id
+    query(con, "UPDATE posts SET parent=? WHERE post_id=?", newest_id, newest_id);
     render :post, board, newest_id
   end
 end
@@ -69,7 +70,7 @@ menu :board do |con, board|
   br
   input 'Make a new thread', "/#{board}/half"
   br
-  query(con, "SELECT * FROM posts WHERE board='#{board}' AND is_op=1 ORDER BY bump_date DESC").each do |res|
+  query(con, "SELECT * FROM posts WHERE board=? AND is_op=1 ORDER BY bump_date DESC", board).each do |res|
     menu "=#{res["title"]}= [Created on: #{res["date_posted"]}, Latest bump on: #{res["bump_date"]}]", "/#{board}/thread/#{res["post_id"].to_s}"
   end
   br
@@ -78,7 +79,7 @@ end
 menu :thread do |con, board, id|
   big_header "thread"
   br
-  query(con, "SELECT * FROM posts WHERE board='#{board}' AND parent=#{id.to_i}").each do |res|
+  query(con, "SELECT * FROM posts WHERE board=? AND parent=#{id.to_i}", board).each do |res|
     if res["title"] then
       text "#{res["title"]}"
       br
