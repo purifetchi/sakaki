@@ -9,6 +9,7 @@ require 'base64'
 # Config loading & host:port setup
 
 config = JSON.parse(File.read('config.json'))
+API = "/api/v1"
 set :host, config["host_ip"]
 set :port, config["port"]
 
@@ -27,6 +28,10 @@ end
 
 route '/about' do
   render :about
+end
+
+route API + '/boards' do
+  "#{JSON.Stringify(config["boards"])}"
 end
 
 config["boards"].each do |board, array|
