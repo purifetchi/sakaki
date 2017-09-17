@@ -29,7 +29,7 @@ config["boards"].each do |board, array|
     render :board, make_con(), board
   end
 
-  route '/' + board + '/:id' do
+  route '/' + board + '/thread/:id' do
     render :thread, make_con(), board, params[:id]
   end
 
