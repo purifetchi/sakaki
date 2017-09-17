@@ -38,7 +38,7 @@ config["boards"].each do |board, array|
     con = make_con()
     query(con, "INSERT INTO posts (content, parent, is_op, board) VALUES (?, ?, ?, ?)", request.input, params[:id].to_i, 0, board);
     query(con, "UPDATE posts SET bump_date=CURRENT_TIMESTAMP() WHERE post_id=?", params[:id].to_i);
-    render :reply, board, params[:id]
+    render :reply, board
   end
 
   route '/' + board + '/half' do
@@ -49,8 +49,6 @@ config["boards"].each do |board, array|
     con = make_con()
     title = Base64.urlsafe_decode64(params[:title])
     query(con, "INSERT INTO posts (title, content, is_op, board) VALUES (?, ?, ?, ?)", title, request.input, 1, board);
-    newest_id = con.last_id
-    query(con, "UPDATE posts SET parent=? WHERE post_id=?", newest_id, newest_id);
     render :post, board, newest_id
   end
 end
@@ -79,7 +77,7 @@ end
 menu :thread do |con, board, id|
   big_header "thread"
   br
-  query(con, "SELECT * FROM posts WHERE board=? AND parent=#{id.to_i}", board).each do |res|
+  query(con, "SELECT * FROM posts WHERE parent=? OR post_id=?", id.to_i, id.to_i).each do |res|
     if res["title"] then
       text "#{res["title"]}"
       br
@@ -106,8 +104,8 @@ menu :half do |board, title|
   input 'Add OP', "/#{board}/post/#{encoded}"
 end
 
-menu :post do |board, id|
+menu :post do |board|
   text "OP posted!"
   br
-  menu 'Go to OP', '/#{board}/thread/#{id}'
+  menu 'Go back to board', "/#{board}"
 end
