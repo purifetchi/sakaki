@@ -46,7 +46,7 @@ end
 route API + '/thread/:id' do
   payload = []
   query(make_con(), "SELECT * FROM posts WHERE parent=? OR post_id=?", params[:id].to_i, params[:id].to_i).each do |res|
-    output = {:post_id => res["post_id"].to_s, :comment => res["content"], :date_posted => res["date_posted"], :is_op = res["is_op"]}
+    output = {:post_id => res["post_id"].to_s, :comment => res["content"], :date_posted => res["date_posted"], :is_op => res["is_op"]}
     if res["is_op"] == 1 do
       output[:title] = res["title"]
       output[:date_bumped] = res["bump_date"]
