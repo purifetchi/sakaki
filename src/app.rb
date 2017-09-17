@@ -4,6 +4,7 @@
 require 'gopher2000'
 require 'json'
 require 'mysql2'
+require 'base64'
 
 # Config loading & host:port setup
 
@@ -34,8 +35,22 @@ config["boards"].each do |board, array|
   end
 
   route '/' + board + '/reply/:id' do
-    query(make_con(), "INSERT INTO posts (content, parent, is_op, board) VALUES (?, ?, ?, ?)", request.input, params[:id].to_i, 0, board);
+    con = make_con()
+    query(con, "INSERT INTO posts (content, parent, is_op, board) VALUES (?, ?, ?, ?)", request.input, params[:id].to_i, 0, board);
+    query(con, "UPDATE posts SET bump_date=CURRENT_TIMESTAMP() WHERE post_id=?", params[:id].to_i);
     render :reply, board, params[:id]
+  end
+
+  route '/' + board + '/half' do
+    render :half, board, request.input
+  end
+
+  route '/' + board + '/post/:title' do
+    con = make_con()
+    newest_id = con.last_id + 1
+    title = Base64.urlsafe_decode64(params[:title])
+    query(con, "INSERT INTO posts (title, content, parent, is_op, board) VALUES (?, ?, ?, ?, ?)", title, request.input, newest_id, 1, board);
+    render :post, board, newest_id
   end
 end
 
@@ -79,4 +94,17 @@ menu :reply do |board, id|
   text "Replied to thread #{id}"
   br
   menu 'Go back', "/#{board}/thread/#{id}"
+end
+
+menu :half do |board, title|
+  big_header "Creating a post with title #{title}"
+  br
+  encoded = Base64.urlsafe_encode64(title)
+  input 'Add OP', "/#{board}/post/#{encoded}"
+end
+
+menu :post do |board, id|
+  text "OP posted!"
+  br
+  menu 'Go to OP', '/#{board}/thread/#{id}'
 end
