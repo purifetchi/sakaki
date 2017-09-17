@@ -38,14 +38,14 @@ config["boards"].each do |board, array|
     con = make_con()
     query(con, "INSERT INTO posts (content, parent, is_op, board) VALUES (?, ?, ?, ?)", request.input, params[:id].to_i, 0, board);
     query(con, "UPDATE posts SET bump_date=CURRENT_TIMESTAMP() WHERE post_id=?", params[:id].to_i);
-    render :reply, board
+    render :reply, board, params[:id]
   end
 
   route '/' + board + '/half' do
     render :half, board, request.input
   end
 
-  route '/' + board + '/post/:title/' do
+  route '/' + board + '/post/:title' do
     con = make_con()
     title = Base64.urlsafe_decode64(params[:title])
     query(con, "INSERT INTO posts (title, content, is_op, board) VALUES (?, ?, ?, ?)", title, request.input, 1, board);
@@ -55,7 +55,7 @@ end
 
 # All the renderable menus
 menu :index do
-  big_header "Sakaki"
+  figlet "Sakaki"
   br
   config["boards"].each do |board, array|
     menu "/#{board}/ - #{config["boards"][board]["description"]}", "/#{board}"
